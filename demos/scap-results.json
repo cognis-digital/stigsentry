@@ -1,0 +1,27 @@
+[
+  {
+    "stig_id": "V-238298",
+    "host": "web01",
+    "status": "fail"
+  },
+  {
+    "stig_id": "V-238213",
+    "host": "web01",
+    "status": "fail"
+  },
+  {
+    "stig_id": "V-242418",
+    "host": "db03",
+    "status": "fail"
+  },
+  {
+    "stig_id": "V-238382",
+    "host": "web01",
+    "status": "fail"
+  },
+  {
+    "stig_id": "V-238211",
+    "host": "web02",
+    "status": "pass"
+  }
+]
