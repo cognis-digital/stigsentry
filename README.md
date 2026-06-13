@@ -5,6 +5,37 @@
 
 > Ingest SCAP/SCC/OpenSCAP/Wazuh findings → produce eMASS-ready POAM + OSCAL Assessment Results.
 
+## Usage — step by step
+
+`stigsentry` uses the shared `cognis_mil` CLI: a positional target plus
+standard output/scoring flags.
+
+1. **Install** (editable from a clone, or from the wheel):
+   ```bash
+   pip install -e .
+   # provides the `stigsentry` console script
+   ```
+2. **Run the primary scan** against a path or target (defaults to `.`):
+   ```bash
+   stigsentry .
+   ```
+3. **Emit machine-readable output** — `console|json|markdown|sarif|oscal`:
+   ```bash
+   stigsentry ./target --format json --out stigsentry-report.json
+   ```
+4. **Read / use the output.** The JSON report carries the findings list and a
+   severity-weighted `composite_score`; `sarif` feeds code-scanning dashboards
+   and `oscal` emits an OSCAL skeleton for compliance pipelines. An operator
+   `--classification` banner can be stamped on (placeholder only):
+   ```bash
+   stigsentry ./target --classification "UNCLASSIFIED//FOR PUBLIC RELEASE" --format markdown
+   ```
+5. **Gate CI on severity** with `--fail-on` (`very_high|high|moderate|low|none`);
+   the process exits non-zero when a finding at/above the threshold exists:
+   ```bash
+   stigsentry ./target --format sarif --out stigsentry.sarif --fail-on high
+   ```
+
 ## Upstream
 
 Forks / wraps **https://github.com/wazuh/wazuh**. See [`UPSTREAM.md`](./UPSTREAM.md) for the
