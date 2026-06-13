@@ -111,3 +111,9 @@ These are emitted in JSON, SARIF, and the OSCAL skeleton.
 Apache-2.0 unless stated otherwise.
 
 See [the master index](../../MASTER-INDEX.md).
+
+## Interoperability
+
+`{}` composes with the 300+ tool Cognis suite — JSON in/out and a shared
+OpenAI-compatible `/v1` backbone. See **[INTEROP.md](INTEROP.md)** for the
+suite map, composition patterns, and reference stacks.
