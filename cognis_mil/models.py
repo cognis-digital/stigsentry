@@ -66,7 +66,6 @@ class ScanResult:
     def total_findings(self): return len(self.findings)
 
     def finalize(self):
-        import math
         if not self.findings:
             self.composite_score = 0.0; self.risk_level = "Very Low"; return self
         score = sum(f.weight for f in self.findings) * 1.5

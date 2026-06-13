@@ -5,6 +5,12 @@
 
 > Ingest SCAP/SCC/OpenSCAP/Wazuh findings → produce eMASS-ready POAM + OSCAL Assessment Results.
 
+<!-- cognis:layman:start -->
+## What is this?
+
+stigsentry is a command-line tool for security and compliance teams who need to track and report on system vulnerabilities against government standards. It reads scan results from security tools like Wazuh or OpenSCAP and automatically maps each finding to the specific NIST 800-53 control and DISA STIG rule it violates. The output is a ready-to-import spreadsheet (POAM) for risk management systems like eMASS or Xacta, saving hours of manual cross-referencing. It is built for military, federal, and defense contractor teams who must maintain continuous ATO (Authority to Operate) packages.
+<!-- cognis:layman:end -->
+
 ## Upstream
 
 Forks / wraps **https://github.com/wazuh/wazuh**. See [`UPSTREAM.md`](./UPSTREAM.md) for the
@@ -16,6 +22,52 @@ licensing posture, supported commits, and how to upgrade.
 - CCI + MITRE ATT&CK enrichment
 - POAM CSV for eMASS / Xacta / RSA Archer
 - OSCAL Assessment Results JSON
+
+<!-- cognis:domains:start -->
+## Domains
+
+**Primary domain:** Government & Compliance  ·  **JTF MERIDIAN division:** IRONCLAD · ANVIL
+
+**Topics:** `cognis` `compliance` `govtech` `grc`
+
+Part of the **Cognis Neural Suite** — 300+ source-available tools organized across 12 domains under the JTF MERIDIAN command structure. See the [suite on GitHub](https://github.com/cognis-digital) and [jtf-meridian](https://github.com/cognis-digital/jtf-meridian) for how the pieces fit together.
+<!-- cognis:domains:end -->
+
+<!-- cognis:install:start -->
+## Install
+
+`stigsentry` is source-available (not published to PyPI) — every method below installs
+straight from GitHub. Pick whichever you prefer; the one-line scripts auto-detect
+the best tool available on your machine.
+
+**One-liner (Linux / macOS):**
+```sh
+curl -fsSL https://raw.githubusercontent.com/cognis-digital/stigsentry/HEAD/install.sh | sh
+```
+
+**One-liner (Windows PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/cognis-digital/stigsentry/HEAD/install.ps1 | iex
+```
+
+**Or install manually — any one of:**
+```sh
+pipx install "git+https://github.com/cognis-digital/stigsentry.git"     # isolated (recommended)
+uv tool install "git+https://github.com/cognis-digital/stigsentry.git"  # uv
+pip install "git+https://github.com/cognis-digital/stigsentry.git"      # pip
+```
+
+**From source:**
+```sh
+git clone https://github.com/cognis-digital/stigsentry.git
+cd stigsentry && pip install .
+```
+
+Then run:
+```sh
+stigsentry --help
+```
+<!-- cognis:install:end -->
 
 ## Install
 
@@ -68,7 +120,7 @@ These are emitted in JSON, SARIF, and the OSCAL skeleton.
 ```yaml
 - name: stigsentry scan
   run: |
-    pip install cognis-stigsentry
+    pip install "git+https://github.com/cognis-digital/stigsentry.git"
     stigsentry . --format=oscal --out=assessment-results.json --fail-on=high
 - name: Upload to eMASS/Xacta
   run: cognis-rmf-package import assessment-results.json
