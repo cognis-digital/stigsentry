@@ -4,7 +4,7 @@ Cognis additions only. Pairs with Wazuh / OSSEC / Splunk / Elastic as a
 SIEM-agnostic enrichment layer.
 """
 from __future__ import annotations
-import json, csv, time
+import json, csv
 from pathlib import Path
 from cognis_mil import ScanResult, Finding, Severity
 
