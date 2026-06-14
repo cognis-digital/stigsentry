@@ -23,3 +23,6 @@ stigsentry = "stigsentry.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["stigsentry", "cognis_mil"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
