@@ -67,11 +67,22 @@ class ScanResult:
 
     def finalize(self):
         if not self.findings:
-            self.composite_score = 0.0; self.risk_level = "Very Low"; return self
+            self.composite_score = 0.0
+            self.risk_level = "Very Low"
+            return self
         score = sum(f.weight for f in self.findings) * 1.5
         self.composite_score = min(100.0, score)
         s = self.composite_score
-        self.risk_level = "Very High" if s >= 80 else "High" if s >= 60 else "Moderate" if s >= 40 else "Low" if s >= 20 else "Very Low"
+        if s >= 80:
+            self.risk_level = "Very High"
+        elif s >= 60:
+            self.risk_level = "High"
+        elif s >= 40:
+            self.risk_level = "Moderate"
+        elif s >= 20:
+            self.risk_level = "Low"
+        else:
+            self.risk_level = "Very Low"
         return self
 
     def to_dict(self):
