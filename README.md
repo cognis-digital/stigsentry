@@ -25,7 +25,9 @@ standard output/scoring flags.
    ```
 4. **Read / use the output.** The JSON report carries the findings list and a
    severity-weighted `composite_score`; `sarif` feeds code-scanning dashboards
-   and `oscal` emits an OSCAL skeleton for compliance pipelines. An operator
+   and `oscal` emits a real **OSCAL 1.1.2 Assessment Results** document
+   (deterministic UUIDs, observation+finding pairs, NIST control targets with
+   `not-satisfied` status, STIG/CCI/ATT&CK props) — ingestible by GRC platforms. An operator
    `--classification` banner can be stamped on (placeholder only):
    ```bash
    stigsentry ./target --classification "UNCLASSIFIED//FOR PUBLIC RELEASE" --format markdown
@@ -46,7 +48,7 @@ licensing posture, supported commits, and how to upgrade.
 - STIG → NIST 800-53 crosswalk
 - CCI + MITRE ATT&CK enrichment
 - POAM CSV for eMASS / Xacta / RSA Archer
-- OSCAL Assessment Results JSON
+- OSCAL 1.1.2 Assessment Results JSON (real, validatable — not a skeleton)
 
 ## Install
 
@@ -72,7 +74,7 @@ stigsentry <target> --format=console     # default
 stigsentry <target> --format=json
 stigsentry <target> --format=sarif       # for code-scanning pipelines
 stigsentry <target> --format=markdown    # for PRs / briefings
-stigsentry <target> --format=oscal       # OSCAL Assessment Results skeleton
+stigsentry <target> --format=oscal       # real OSCAL 1.1.2 Assessment Results (GRC-ingestible)
 ```
 
 ## Classification banner

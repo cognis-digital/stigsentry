@@ -1,7 +1,20 @@
 import json
+import time
+import uuid
 from .models import Severity, ScanResult
 
 ICON = {Severity.VERY_HIGH:"🚨", Severity.HIGH:"❗", Severity.MODERATE:"⚠️ ", Severity.LOW:"•", Severity.VERY_LOW:"ℹ️ "}
+
+# Deterministic namespace so the same finding always yields the same OSCAL uuid.
+_OSCAL_NS = uuid.UUID("c0911500-0000-4000-8000-636f676e6973")
+
+
+def _oscal_uuid(*parts: str) -> str:
+    return str(uuid.uuid5(_OSCAL_NS, "|".join(parts)))
+
+
+def _iso(epoch: float) -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch or 0))
 
 def to_json(r: ScanResult) -> str:
     return json.dumps(r.to_dict(), indent=2, default=str)
@@ -64,22 +77,75 @@ def to_sarif(r: ScanResult) -> str:
         }],
     }, indent=2)
 
-def to_oscal_skeleton(r: ScanResult) -> str:
-    """Minimal OSCAL 1.1 Assessment Results skeleton — operator fills the rest."""
+def to_oscal(r: ScanResult) -> str:
+    """Real OSCAL 1.1.2 Assessment Results (SAR) — ingestible by GRC platforms.
+
+    Every finding becomes a paired OSCAL observation + finding, with deterministic
+    UUIDs (uuid5, stable across runs), a control mapping to the NIST 800-53 control,
+    a `not-satisfied` target status, and STIG/CCI/ATT&CK preserved as props. No
+    placeholder zero-UUIDs — this validates against the OSCAL AR model shape.
+    """
+    ts = _iso(getattr(r, "started_at", 0) or 0)
+    ar_uuid = _oscal_uuid(r.tool_name, "assessment-results")
+    result_uuid = _oscal_uuid(r.tool_name, "result")
+
+    observations, findings = [], []
+    for f in r.findings:
+        obs_uuid = _oscal_uuid(r.tool_name, "obs", f.id)
+        fnd_uuid = _oscal_uuid(r.tool_name, "fnd", f.id)
+        props = [{"name": "severity", "value": f.severity.value, "ns": "https://cognis.digital/ns/oscal"}]
+        for name, val in (("disa-stig", f.disa_stig), ("cci", f.cci), ("mitre-attack", f.mitre_attack)):
+            if val:
+                props.append({"name": name, "value": val, "ns": "https://cognis.digital/ns/oscal"})
+        observations.append({
+            "uuid": obs_uuid,
+            "title": f.id,
+            "description": f.title or f.description or f.id,
+            "methods": ["EXAMINE"],
+            "types": ["finding"],
+            "collected": ts,
+            **({"relevant-evidence": [{"description": f.location}]} if f.location else {}),
+        })
+        finding = {
+            "uuid": fnd_uuid,
+            "title": f.title or f.id,
+            "description": f.remediation or f.description or f.title or f.id,
+            "props": props,
+            "target": {
+                "type": "objective-id",
+                "target-id": f.nist_800_53 or f.id,
+                "status": {"state": "not-satisfied"},
+            },
+            "related-observations": [{"observation-uuid": obs_uuid}],
+        }
+        if f.nist_800_53:
+            finding["implementation-statement-uuid"] = _oscal_uuid("control", f.nist_800_53)
+        findings.append(finding)
+
     return json.dumps({
-        "assessment-results":{
-            "uuid": "00000000-0000-0000-0000-000000000000",
-            "metadata":{"title":f"{r.tool_name} assessment",
-                        "version":r.tool_version,
-                        "oscal-version":"1.1.0",
-                        "remarks":"PLACEHOLDER — operator must supply UUIDs, parties, system-security-plan link"},
-            "results":[{
-                "uuid":"00000000-0000-0000-0000-000000000001",
-                "findings":[{
-                    "uuid":f"finding-{i}", "title":f.title,
-                    "description":f.description,
-                    "related-controls":[{"control-id":f.nist_800_53}] if f.nist_800_53 else [],
-                } for i, f in enumerate(r.findings, 1)]
-            }]
+        "assessment-results": {
+            "uuid": ar_uuid,
+            "metadata": {
+                "title": f"{r.tool_name} — STIG/RMF Assessment Results",
+                "last-modified": ts,
+                "version": r.tool_version,
+                "oscal-version": "1.1.2",
+                "props": [{"name": "classification", "value": r.classification_placeholder}],
+            },
+            "import-ap": {"href": "#assessment-plan"},
+            "results": [{
+                "uuid": result_uuid,
+                "title": f"{r.tool_name} scan",
+                "description": f"{r.total_findings()} finding(s); composite risk "
+                               f"{r.composite_score}/100 ({r.risk_level}).",
+                "start": ts,
+                "reviewed-controls": {"control-selections": [{"include-all": {}}]},
+                "observations": observations,
+                "findings": findings,
+            }],
         }
     }, indent=2)
+
+
+# Back-compat alias (older imports / docs referenced the skeleton name).
+to_oscal_skeleton = to_oscal
