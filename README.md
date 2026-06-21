@@ -94,7 +94,7 @@ Every finding can carry references to:
 - **MITRE ATT&CK** technique IDs (e.g. `T1078`)
 - **CCI** (Control Correlation Identifier)
 
-These are emitted in JSON, SARIF, and the OSCAL skeleton.
+These are emitted in JSON, SARIF, and real OSCAL 1.1.2 Assessment Results.
 
 ## CI / RMF integration
 
