@@ -96,6 +96,63 @@ Every finding can carry references to:
 
 These are emitted in JSON, SARIF, and real OSCAL 1.1.2 Assessment Results.
 
+## Live data feed — NIST 800-53 rev5 (OSCAL), edge / air-gap deployable
+
+A STIG finding maps to a NIST control **ID** like `AC-6(2)` — opaque on a POAM.
+stigsentry ingests the **authoritative NIST SP 800-53 rev5 catalog** (native
+OSCAL JSON, published by NIST) and resolves each control ID to its **official
+title** and OSCAL family, so reports carry the real control name. This is a
+genuine enrichment: every scan adds `nist_800_53_controls_resolved` to the
+result metadata, weaves the title into each finding's description, and the
+eMASS POAM gains a **Control Title** column.
+
+Real source (keyless, no API key):
+
+| feed id | source |
+|---|---|
+| `oscal-800-53-rev5-catalog` | NIST SP 800-53 rev5 catalog (OSCAL) — `https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json` |
+
+The ingestion layer (`stigsentry/datafeeds.py` + the bundled
+`data_feeds_2026.json` catalog) is **standard-library only** — it fetches over
+HTTPS, caches to disk (`COGNIS_FEEDS_CACHE`, default `~/.cache/cognis-feeds`),
+and re-serves the catalog **offline** so disconnected / edge / air-gapped gear
+keeps working.
+
+```bash
+# list the compliance feeds stigsentry consumes (filtered to its domain)
+stigsentry feeds list
+
+# fetch + cache the NIST OSCAL catalog (one live pull)
+stigsentry feeds update oscal-800-53-rev5-catalog
+
+# re-serve from cache only — never touches the network
+stigsentry feeds get oscal-800-53-rev5-catalog --offline
+```
+
+### Air-gap / sneakernet workflow
+
+On a connected host, pull and snapshot the cache, carry it across, import it:
+
+```bash
+# connected enclave
+stigsentry feeds update oscal-800-53-rev5-catalog
+python -m stigsentry.datafeeds snapshot-export feeds.tar.gz
+
+# air-gapped enclave (copy feeds.tar.gz over, then)
+python -m stigsentry.datafeeds snapshot-import feeds.tar.gz
+stigsentry feeds get oscal-800-53-rev5-catalog --offline   # works, no network
+```
+
+The scan itself runs the enrichment automatically; pass it through offline:
+
+```bash
+COGNIS_FEEDS_CACHE=./feed-cache stigsentry demos/scap-results.json
+python demos/enrich_oscal_demo.py        # fully offline against the bundled snapshot
+```
+
+Tests never hit the network: a trimmed snapshot of the real catalog lives under
+`tests/fixtures/` and the suite serves it via `COGNIS_FEEDS_CACHE` + `offline=True`.
+
 ## CI / RMF integration
 
 ```yaml

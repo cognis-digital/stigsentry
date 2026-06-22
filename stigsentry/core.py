@@ -32,7 +32,7 @@ def parse_findings_file(path: Path) -> list[dict]:
             return list(reader)
     return []
 
-def scan(target=".", **opts):
+def scan(target=".", enrich=True, offline=False, **opts):
     r = ScanResult(tool_name="stigsentry", tool_version="0.1.0")
     p = Path(target)
     files = list(p.glob("*.json")) + list(p.glob("*.csv")) if p.is_dir() else [p]
@@ -53,14 +53,25 @@ def scan(target=".", **opts):
                           location=finding.get("host", str(f)),
                           nist_800_53=info["nist"], disa_stig=sid, cci=info["cci"],
                           remediation=f"Remediate per DISA {sid}, evidence to control {info['nist']}"))
+    # Real feed enrichment: resolve each NIST 800-53 control ID to its official
+    # title from the authoritative OSCAL 800-53 rev5 catalog (cached / offline-safe).
+    if enrich:
+        try:
+            from .feeds import enrich_result
+            enrich_result(r, offline=offline)
+        except Exception:  # never let an unreachable feed break a scan
+            pass
     r.finalize(); return r
 
 def emit_poam(result: ScanResult, out: Path = None) -> str:
     """Emit eMASS-compatible POAM (Plan of Action & Milestones) CSV."""
-    rows = [["Control","Weakness","Severity","SCD","POC","Status","Resources Required","Comments"]]
+    # Official NIST 800-53 rev5 control titles, resolved from the real OSCAL
+    # catalog by feeds.enrich_result() (empty dict if enrichment didn't run).
+    titles = result.meta.get("nist_800_53_controls_resolved", {})
+    rows = [["Control","Control Title","Weakness","Severity","SCD","POC","Status","Resources Required","Comments"]]
     for f in result.findings:
         rows.append([
-            f.nist_800_53 or "(none)", f.title,
+            f.nist_800_53 or "(none)", titles.get(f.nist_800_53, ""), f.title,
             f.severity.value, "TBD", "TBD",
             "Open", "TBD", f"STIG {f.disa_stig} / CCI {f.cci}"
         ])
