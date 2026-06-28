@@ -5,6 +5,78 @@
 
 > Ingest SCAP/SCC/OpenSCAP/Wazuh findings → produce eMASS-ready POAM + OSCAL Assessment Results.
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+Real, reproducible output from the tool — runs offline:
+
+```console
+$ stigsentry-emit --version
+stigsentry 0.2.0
+```
+
+```console
+$ stigsentry-emit --help
+usage: stigsentry [-h] [--format {console,json,markdown,sarif,oscal}]
+                  [--out OUT] [--fail-on {very_high,high,moderate,low,none}]
+                  [--classification CLASSIFICATION] [-v]
+                  [target]
+
+stigsentry — Cognis Digital · Military/IC ecosystem
+
+positional arguments:
+  target                Path/target
+
+options:
+  -h, --help            show this help message and exit
+  --format {console,json,markdown,sarif,oscal}
+  --out OUT             Write output to file
+  --fail-on {very_high,high,moderate,low,none}
+  --classification CLASSIFICATION
+                        Operator-supplied banner. PLACEHOLDER. Tool does not
+                        interpret.
+  -v, --version         show program's version number and exit
+```
+
+> Blocks above are real `stigsentry` output — reproduce them from a clone.
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+  "stigsentry": {
+    "platform": "STIX",
+    "findings": [
+      {
+        "id": "1234567890",
+        "title": "Example Finding 1",
+        "description": "This is an example finding.",
+        "indicators": [
+          {
+            "type": "IPv4-Address",
+            "value": "192.168.1.100"
+          }
+        ]
+      },
+      {
+        "id": "2345678901",
+        "title": "Example Finding 2",
+        "description": "This is another example finding.",
+        "indicators": [
+          {
+            "type": "Domain-Name",
+            "value": "example.com"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 `stigsentry` uses the shared `cognis_mil` CLI: a positional target plus

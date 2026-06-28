@@ -1,0 +1,21 @@
+$ stigsentry-emit --help
+
+usage: stigsentry [-h] [--format {console,json,markdown,sarif,oscal}]
+                  [--out OUT] [--fail-on {very_high,high,moderate,low,none}]
+                  [--classification CLASSIFICATION] [-v]
+                  [target]
+
+stigsentry — Cognis Digital · Military/IC ecosystem
+
+positional arguments:
+  target                Path/target
+
+options:
+  -h, --help            show this help message and exit
+  --format {console,json,markdown,sarif,oscal}
+  --out OUT             Write output to file
+  --fail-on {very_high,high,moderate,low,none}
+  --classification CLASSIFICATION
+                        Operator-supplied banner. PLACEHOLDER. Tool does not
+                        interpret.
+  -v, --version         show program's version number and exit
