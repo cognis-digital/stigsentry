@@ -1,0 +1,6 @@
+stig_id,host,status
+V-242418,db03.enclave.mil,fail
+V-238230,db03.enclave.mil,fail
+V-242414,k8s-api01.enclave.mil,fail
+V-238211,k8s-api01.enclave.mil,fail
+V-999999,k8s-api01.enclave.mil,fail

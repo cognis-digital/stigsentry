@@ -1,0 +1,7 @@
+[
+  { "stig_id": "V-238298", "host": "web01.enclave.mil", "status": "fail" },
+  { "stig_id": "V-238213", "host": "web01.enclave.mil", "status": "fail" },
+  { "stig_id": "V-238382", "host": "web01.enclave.mil", "status": "fail" },
+  { "stig_id": "V-238211", "host": "web02.enclave.mil", "status": "pass" },
+  { "stig_id": "V-238219", "host": "web02.enclave.mil", "status": "fail" }
+]

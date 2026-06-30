@@ -149,6 +149,40 @@ stigsentry <target> --format=markdown    # for PRs / briefings
 stigsentry <target> --format=oscal       # real OSCAL 1.1.2 Assessment Results (GRC-ingestible)
 ```
 
+## Demos
+
+Five runnable, **fully offline** scenarios in [`demos/`](./demos/), each aimed at a
+different federal-compliance audience. They re-scan the bundled sample enclave and
+resolve NIST 800-53 titles from a bundled OSCAL snapshot, so they reproduce
+byte-for-byte on a disconnected box. Full write-up in [`docs/DEMOS.md`](./docs/DEMOS.md).
+
+```bash
+PYTHONUTF8=1 python demos/run_all.py        # all five, end to end (exit 0)
+PYTHONUTF8=1 python demos/02_isso_poam.py    # or just one
+```
+
+| # | Scenario | Audience | What it shows |
+|---|----------|----------|---------------|
+| 1 | [`01_sysadmin_scan.py`](./demos/01_sysadmin_scan.py) | Sysadmins | Raw SCAP rows → severity-ranked, per-host fix-first worklist. |
+| 2 | [`02_isso_poam.py`](./demos/02_isso_poam.py) | ISSO / ISSM | STIG findings → eMASS POA&M CSV with real NIST Control Title column. |
+| 3 | [`03_auditor_oscal.py`](./demos/03_auditor_oscal.py) | Assessors / auditors | Real OSCAL 1.1.2 Assessment Results, deterministic UUIDs. |
+| 4 | [`04_ato_risk_brief.py`](./demos/04_ato_risk_brief.py) | ATO / Authorizing Official | Composite risk + control-family rollup + Markdown brief. |
+| 5 | [`05_airgap_pipeline.py`](./demos/05_airgap_pipeline.py) | Air-gap / CI | Offline resolve, SARIF export, `--fail-on` build gate. |
+
+The check → map → POA&M flow (full diagram in [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)):
+
+```mermaid
+flowchart LR
+    scap[SCAP / SCC / Wazuh<br/>STIG results] --> check{status fail?}
+    check -->|pass| drop[dropped]
+    check -->|fail| xwalk[STIG -> NIST 800-53<br/>+ CCI + severity]
+    catalog[(NIST 800-53 rev5<br/>OSCAL catalog)] -->|official titles| result[(ScanResult)]
+    xwalk --> result
+    result --> poam[eMASS POA&M CSV]
+    result --> oscal[OSCAL 1.1.2 SAR]
+    result --> sarif[SARIF / Markdown / JSON]
+```
+
 ## Classification banner
 
 All output is wrapped with an operator-supplied classification banner.
