@@ -17,6 +17,21 @@ SCENARIOS = [
     "03_auditor_oscal",
     "04_ato_risk_brief",
     "05_airgap_pipeline",
+    "06_malformed_input_handling",
+    "07_wrapper_json_shapes",
+    "08_rmf_mapping_gap",
+    "09_control_id_normalization",
+    "10_snapshot_sneakernet",
+    "11_ci_gate_exit_codes",
+    "12_audit_trail",
+    "13_classification_banner",
+    "14_severity_rollup",
+    "15_csv_tsv_ingest",
+    "16_multi_format_export",
+    "17_poam_to_grc",
+    "18_oscal_diff",
+    "19_per_host_triage",
+    "20_end_to_end_pipeline",
 ]
 
 
