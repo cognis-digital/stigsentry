@@ -8,3 +8,5 @@ build/
 *.log
 .DS_Store
 upstream/
+
+media/walkthrough.mp4

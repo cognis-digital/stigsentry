@@ -7,6 +7,15 @@
 
 
 <!-- cognis:example:start -->
+
+## Watch the walkthrough
+
+A full narrated tour — setup, the tool in action, and every demo scenario:
+
+[![Watch the stigsentry walkthrough](media/walkthrough-thumb.png)](https://github.com/cognis-digital/stigsentry/releases/download/walkthrough-v1/walkthrough.mp4)
+
+▶ **[Watch the walkthrough (MP4)](https://github.com/cognis-digital/stigsentry/releases/download/walkthrough-v1/walkthrough.mp4)**
+
 ## 🔎 Example output
 
 Real, reproducible output from the tool — runs offline:
