@@ -238,8 +238,8 @@ Tests never hit the network: a trimmed snapshot of the real catalog lives under
 
 ## Part of the Cognis Digital military / IC ecosystem
 
-12 repos. All MIT/Apache-2.0/GPL-3 (per upstream). Cognis additions are
-Apache-2.0 unless stated otherwise.
+12 repos. All MIT/COCL (Cognis Open Collaboration License)/GPL-3 (per upstream). Cognis additions are
+COCL (Cognis Open Collaboration License) unless stated otherwise.
 
 See [the master index](../../MASTER-INDEX.md).
 
