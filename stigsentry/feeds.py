@@ -56,10 +56,11 @@ def normalize_control_id(cid: str) -> str:
     cid = (cid or "").strip().lower()
     if not cid:
         return ""
-    # numeric enhancement: AC-6(2) -> ac-6.2
-    cid = re.sub(r"\s*\((\d+)\)", r".\1", cid)
-    # alpha statement-part refs (AC-7(a)) point at the base control
+    # drop any trailing alpha statement-part refs first (AC-6(2)(a) -> AC-6(2)):
+    # statement parts are not catalog control ids, the enhancement is.
     cid = re.sub(r"\s*\([a-z]+\)", "", cid)
+    # numeric enhancement: AC-6(2) -> ac-6.2  (tolerates a space: "AC-6 (2)")
+    cid = re.sub(r"\s*\((\d+)\)", r".\1", cid)
     cid = cid.replace(" ", "")
     return cid
 
